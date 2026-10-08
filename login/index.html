@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' https://qwqnqgghwgycfadndhdl.supabase.co; base-uri 'none'; form-action 'none'">
+  <title>管理者ログイン｜VANILLA ISN’T BAD.</title>
+  <link rel="stylesheet" href="/vanilla-admin/admin.css">
+  <script src="/vanilla-admin/admin-config.js" defer></script>
+  <script src="/vanilla-admin/admin-client.js" defer></script>
+  <script src="/vanilla-admin/login.js" defer></script>
+</head>
+<body>
+  <main class="login-page">
+    <p class="login-brand">VANILLA ISN’T BAD.</p>
+    <h1>利用状況の管理</h1>
+    <p class="login-copy">管理用パスワードでログインしてください。</p>
+    <form id="login-form" method="post">
+      <label for="password">管理用パスワード</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button type="submit">ログイン</button>
+      <p id="login-error" role="alert"></p>
+    </form>
+    <noscript><p>ログインにはJavaScriptを有効にしてください。</p></noscript>
+    <p class="login-footnote">さくら・メールのパスワードとは別です。</p>
+  </main>
+</body>
+</html>

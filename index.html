@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="color-scheme" content="light">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://qwqnqgghwgycfadndhdl.supabase.co; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+  <title>利用状況の管理｜VANILLA ISN’T BAD.</title>
+  <link rel="stylesheet" href="/vanilla-admin/dashboard.css">
+  <script src="/vanilla-admin/admin-config.js" defer></script>
+  <script src="/vanilla-admin/admin-client.js" defer></script>
+  <script src="/vanilla-admin/dashboard.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">集計へ移動</a>
+  <header class="site-header">
+    <a class="brand" href="/vanilla-admin/" aria-label="VANILLA ISN’T BAD. 管理概要">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M10 15a6 6 0 0 1 12 0M8 17h16l-2.5 11h-11Z"/><path d="M8 17c3 2 13 2 16 0"/></svg></span>
+      <span>VANILLA ISN’T BAD.<small>利用状況の管理</small></span>
+    </a>
+    <nav class="section-nav" aria-label="管理画面の項目">
+      <a href="#overview">概要</a><a href="#acquisition">入口</a><a href="#activation">初回の価値</a><a href="#connections">接続</a>
+    </nav>
+    <button id="logout" class="text-button logout" type="button">ログアウト<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M13 8l4 4-4 4M9 12h11"/></svg></button>
+  </header>
+
+  <main id="main" class="page-shell">
+    <section class="intro" id="overview" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span>RELEASE MEASUREMENT</p>
+        <h1 id="page-title">使われるまでを、<br class="mobile-break">見えるように。</h1>
+        <p class="intro-copy">興味を持った入口から、最初の価値の体験まで。<br class="desktop-break">それぞれの記録を分けて、次に改善する場所を見つけます。</p>
+      </div>
+      <div class="refresh-block">
+        <button id="refresh" type="button" class="button button-secondary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6v5h-5M4 18v-5h5M19 10a7 7 0 0 0-12-5L4 8M5 14a7 7 0 0 0 12 5l3-3"/></svg>データを更新</button>
+        <p id="last-updated">最終集計：取得中</p>
+      </div>
+    </section>
+
+    <form id="filters" class="filter-bar" aria-label="集計の対象">
+      <label>アプリ<select id="filter-app" name="app"><option value="all">すべてのアプリ</option></select></label>
+      <label>期間<select id="filter-days" name="days"><option value="7">過去7日間</option><option value="30" selected>過去30日間</option><option value="90">過去90日間</option></select></label>
+      <label>OS<select id="filter-platform" name="platform"><option value="all">すべてのOS</option><option value="ios">iOS</option><option value="android">Android</option><option value="web">ブラウザー</option><option value="unknown">判別できないOS</option></select></label>
+      <button type="submit" class="button button-dark">この条件で表示</button>
+      <span class="environment-label"><span aria-hidden="true"></span>本番の記録のみ</span>
+    </form>
+
+    <div class="view-mode-row"><p>記録がなくても、グラフの見え方を確認できます。</p><button id="demo-toggle" type="button" class="text-button">表示を試す<span aria-hidden="true">↗</span></button></div>
+    <div id="demo-banner" class="demo-banner" role="status" hidden><strong>表示確認用の架空データです。</strong><span>本番の記録には含まれません。データの取り込みは無効です。</span><button id="demo-return" type="button">本番の記録に戻る ↗</button></div>
+
+    <div id="page-error" class="notice notice-error" role="alert" hidden></div>
+    <div id="report-status" class="connection-notice" role="status" aria-live="polite">
+      <span class="notice-symbol" aria-hidden="true">i</span>
+      <div><strong id="report-status-title">データの接続を確認しています</strong><p id="report-status-copy">取得できていない数値は「—」で表示します。</p></div>
+      <a href="#connections">接続状態を見る<span aria-hidden="true">↗</span></a>
+    </div>
+
+    <div class="section-heading compact-heading"><h2>現在の概要</h2><p id="period-label">過去30日間</p></div>
+    <section class="metric-grid" aria-label="主要な集計値">
+      <article class="metric-card"><span class="metric-label">名刺QRのアクセス</span><p class="metric-number"><span id="total-qr">—</span><span class="metric-unit">件</span></p><p class="metric-help">URLへのアクセス数。読み取った人数ではありません。</p><span id="total-qr-state" class="data-caption">取得中</span></article>
+      <article class="metric-card"><span class="metric-label">ストアへ進む行動</span><p class="metric-number"><span id="total-store">—</span><span class="metric-unit">回</span></p><p class="metric-help">振り分け・ボタン選択の記録。ダウンロードとは別です。</p><span id="total-store-state" class="data-caption">取得中</span></article>
+      <article class="metric-card"><span class="metric-label">アプリの初回起動</span><p class="metric-number"><span id="total-first">—</span><span class="metric-unit">件</span></p><p class="metric-help">計測開始後の初回起動を匿名識別子で集計。人数や入手数とは別です。</p><span id="total-first-state" class="data-caption">取得中</span></article>
+      <article class="metric-card metric-highlight"><span class="metric-label">初回の価値達成率 <span class="tiny-tag">7日観測</span></span><p class="metric-number"><span id="total-rate">—</span><span class="metric-unit">%</span></p><p id="total-rate-help" class="metric-help">7日間の観測が終わった初回起動が対象です。</p><span id="total-rate-state" class="data-caption">取得中</span></article>
+    </section>
+
+    <section id="acquisition" class="panel acquisition-panel" aria-labelledby="acquisition-title">
+      <div class="panel-heading"><div><p class="eyebrow">01 / ENTRY</p><h2 id="acquisition-title">試してみたい、の入口</h2><p>名刺とサイトは別の入口です。ストア・アプリの記録とは合算しません。</p></div><span class="panel-tag">Web・QRの出来事</span></div>
+      <div class="entry-grid">
+        <div class="entry-summary"><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3h6v6H3ZM15 3h6v6h-6ZM3 15h6v6H3ZM15 15h2v2h-2ZM19 19h2v2h-2ZM19 13h2v3M13 19v2h3"/></svg></span><div><h3>名刺から</h3><p>共通URL → 対応ストアへ</p></div><strong><span id="entry-qr">—</span><small>アクセス</small></strong></div>
+        <div class="entry-summary"><span class="entry-icon entry-icon-blue" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01M7 13h7M7 16h10"/></svg></span><div><h3>サイトから</h3><p>サイト訪問 <span id="entry-visits">—</span>件 / 詳細からストアへ</p></div><strong><span id="entry-detail">—</span><small>詳細表示</small></strong></div>
+      </div>
+      <div class="chart-topline"><h3>日ごとの推移</h3><div class="chart-legend"><span><i class="legend-dot legend-qr"></i>QRアクセス</span><span><i class="legend-dot legend-detail"></i>詳細表示</span><span><i class="legend-dot legend-store"></i>ストアへ進む行動</span></div></div>
+      <div id="entry-chart" class="line-chart chart-host" aria-live="polite"><div class="empty-chart"><span class="empty-chart-mark" aria-hidden="true"></span><strong>記録を取得しています</strong><p>取得できた日だけをグラフに表示します。</p></div></div>
+      <p class="chart-footnote">単位：件・回 / 日別集計はUTC、更新時刻は日本時間。線の切れ目は未取得です。表示回数を利用者の人数として扱いません。</p>
+      <div class="channel-section"><h3>入口別のストアへ進む行動</h3><p>名刺からの案内と、サイトで選ぶ行動を分けて見ます。</p><div id="channel-chart" class="channel-chart chart-host"><div class="empty-chart"><strong>入口別の記録を待っています</strong><p>流入元が不明な記録も、接続後に表示します。</p></div></div><p class="chart-footnote">単位：回 / 振り分け・ボタン選択の記録です。同じ利用者のストア到達・入手や、人数の転換率を表すものではありません。</p></div>
+    </section>
+
+    <div class="two-column">
+      <section id="activation" class="panel activation-panel" aria-labelledby="activation-title">
+        <div class="panel-heading"><div><p class="eyebrow">02 / FIRST VALUE</p><h2 id="activation-title">最初の価値に、届いたか</h2><p id="cohort-description">初回起動から7日間を観測した同じ対象群で確認します。</p></div></div>
+        <div class="cohort-body">
+          <div id="cohort-ring" class="cohort-ring" role="img" aria-label="価値達成率は未取得"><span id="cohort-rate">—<small>%</small></span></div>
+          <dl class="cohort-stats"><div><dt>価値を達成</dt><dd><span id="cohort-completed">—</span><small>件</small></dd></div><div><dt>観測が完了した対象</dt><dd><span id="cohort-matured">—</span><small>件</small></dd></div><div><dt>まだ観測中</dt><dd><span id="cohort-pending">—</span><small>件</small></dd></div></dl>
+        </div>
+        <p id="cohort-note" class="inset-note">観測中の対象は、達成率の分母に含めません。</p>
+        <div class="event-counts"><div><span>期間内の初回起動</span><strong id="event-first">—</strong></div><div><span>中心操作の開始</span><strong id="event-start">—</strong></div><div><span>中心操作の完了</span><strong id="event-complete">—</strong></div><div><span id="event-repeat-label">別の計画で再達成</span><strong id="event-repeat">—</strong></div></div>
+        <p class="chart-footnote">下段は期間内に記録された匿名識別子の件数です。対象群が異なるため、この4件数から達成率は計算しません。初回起動は再インストールを含み得ます。再達成は別の計画・旅行で価値を得たことを、アプリ側の完了条件で記録します。</p>
+      </section>
+
+      <section class="panel" aria-labelledby="platform-title">
+        <div class="panel-heading"><div><p class="eyebrow">03 / PLATFORM</p><h2 id="platform-title">OSごとの利用記録</h2><p>環境による違いを調べる入口にします。</p></div></div>
+        <div class="chart-legend platform-legend"><span><i class="legend-dot legend-detail"></i>初回起動</span><span><i class="legend-dot legend-qr"></i>中心操作の完了</span></div>
+        <div id="platform-chart" class="platform-chart chart-host"><div class="empty-chart"><span class="empty-chart-mark" aria-hidden="true"></span><strong>アプリの記録を待っています</strong><p>接続後にOS別の件数が表示されます。</p></div></div>
+        <p class="chart-footnote">単位：匿名のインストール識別子の件数 / 期間内の記録。判別できないOSも表示します。件数だけで使い心地の良し悪しを断定しません。</p>
+      </section>
+    </div>
+
+    <div class="two-column lower-grid">
+      <section class="panel" aria-labelledby="feedback-title">
+        <div class="panel-heading"><div><p class="eyebrow">04 / EXPERIENCE</p><h2 id="feedback-title">使ってみた人の声</h2><p>任意で回答した人の評価分布です。</p></div><span class="panel-tag">5段階評価</span></div>
+        <div class="feedback-overview"><div><span>回答数</span><strong id="feedback-responses">—<small>件</small></strong></div><div><span>表示機会</span><strong id="feedback-prompts">—<small>回</small></strong></div></div>
+        <div id="feedback-chart" class="feedback-chart chart-host"><div class="empty-chart"><strong>評価の記録を待っています</strong><p>回答がない状態を「低評価」として表示しません。</p></div></div>
+        <p class="chart-footnote">回答しなかった人を含めた満足度ではありません。操作の完了だけで、旅行の満足を達成したとは判断しません。</p>
+      </section>
+      <section class="panel" aria-labelledby="store-title">
+        <div class="panel-heading"><div><p class="eyebrow">05 / STORE</p><h2 id="store-title">ストアでの記録</h2><p>各ストアの元の指標名と単位を残します。</p></div></div>
+        <div id="store-metrics" class="store-metrics chart-host"><div class="empty-chart"><strong>ストアの統計は未取得です</strong><p>統計を取り込むと、ここで確認できます。</p></div></div>
+        <p class="chart-footnote">AppleとGoogleで指標の定義や対象は異なります。Webのクリックやアプリの初回起動との一致を保証する数値ではありません。</p>
+        <a class="inline-link" href="#store-import">ストア統計を取り込む<span aria-hidden="true">↗</span></a>
+      </section>
+    </div>
+
+    <section id="connections" class="panel connections-panel" aria-labelledby="connections-title">
+      <div class="panel-heading"><div><p class="eyebrow">06 / DATA SOURCES</p><h2 id="connections-title">データの接続状態</h2><p>集計の変化と、計測の不調を分けて確認します。</p></div><span id="source-summary" class="panel-tag">確認中</span></div>
+      <div id="source-grid" class="source-grid"></div>
+      <div id="report-notes" class="report-notes" hidden></div>
+      <div id="diagnostics" class="diagnostics" hidden></div>
+      <p class="chart-footnote">「記録あり」は過去に受信したことを示し、現在の連続接続を保証しません。「未取得」は集計できる記録がない状態です。「0」は記録を取得できた対象の0件を表します。過去の未計測の操作は復元しません。</p>
+    </section>
+
+    <section id="store-import" class="panel import-panel" aria-labelledby="import-title">
+      <div class="panel-heading"><div><p class="eyebrow">MANUAL IMPORT</p><h2 id="import-title">ストア統計を追加する</h2><p>初期運用向けの手動取り込み。データは管理サーバーに保存されます。</p></div><span class="panel-tag">管理者のみ</span></div>
+      <div class="import-guide"><strong>この画面専用のCSV形式を使います。</strong><p>ストアの公式CSVをそのまま読み込む機能ではありません。元の指標・対象期間を確認し、下記の3列に整えてください。同じストア・アプリ・指標・OS・日付の値は置き換わります。</p><code>date,platform,value<br>YYYY-MM-DD,ios または android,0以上の整数</code></div>
+      <form id="import-form">
+        <div class="import-fields">
+          <label>データ元<select id="import-source" required><option value="apple">App Store Connect（Apple）</option><option value="google">Play Console（Google）</option></select></label>
+          <label>アプリ<select id="import-app" required><option value="">アプリを選択</option></select></label>
+          <label>元の指標名<input id="import-metric" type="text" required maxlength="200" placeholder="公式統計の指標名を入力（100文字以内）" autocomplete="off"></label>
+          <label>単位<select id="import-unit" required><option value="downloads">ダウンロード件数</option><option value="installs">インストール件数</option><option value="views">表示回数</option><option value="clicks">クリック回数</option></select></label>
+        </div>
+        <div class="csv-input-grid">
+          <label class="csv-text-label">CSVを貼り付け<textarea id="import-csv" rows="5" spellcheck="false" placeholder="date,platform,value" aria-describedby="csv-format-note"></textarea></label>
+          <div class="file-option"><span class="or-label">または</span><label class="file-label" for="import-file"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H5v18h14V8ZM14 3v5h5M8 13h8M8 17h6"/></svg>CSVファイルを選択<input id="import-file" type="file" accept=".csv,text/csv"></label><p id="import-file-name">1MB以内 / 最大1,000行</p></div>
+        </div>
+        <p id="csv-format-note" class="chart-footnote">文字コード：UTF-8。日付は YYYY-MM-DD。Appleは ios、Googleは android。合計行・個人情報は含めないでください。</p>
+        <div class="import-actions"><button id="import-submit" class="button button-dark" type="submit">内容を確認して取り込む</button><p id="csv-preview">データを入力すると対象期間と件数を表示します。</p></div>
+        <div id="import-confirmation" class="import-confirmation" hidden><p id="import-confirm-copy"></p><button id="import-confirm" type="button" class="button button-dark">この内容で保存</button><button id="import-cancel" type="button" class="button button-secondary">戻る</button></div>
+        <div id="import-result" class="notice" role="status" aria-live="polite" hidden></div>
+      </form>
+    </section>
+
+    <footer class="page-footer"><span>VANILLA ISN’T BAD.</span><p>この画面は管理者向けです。旅先・自由入力・氏名などの個人情報は、集計のために表示しません。</p><a href="#main">上へ戻る ↑</a></footer>
+  </main>
+</body>
+</html>
